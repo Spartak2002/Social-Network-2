@@ -52,4 +52,7 @@ export interface IChange {
   login?: string;
 }
 
-export type IRequest = Omit<IUser , "followers" | "followig" | "password" | "login">
+export interface IRequest {
+  id: number
+  user: IUser
+} 
