@@ -43,6 +43,7 @@ export interface IPost {
   title: string;
   picture: string;
   likes: IUser[];
+  isLiked: boolean;
 }
 
 export interface IChange {
@@ -55,4 +56,5 @@ export interface IChange {
 export interface IRequest {
   id: number
   user: IUser
-} 
+}
+

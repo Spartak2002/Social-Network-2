@@ -15,13 +15,13 @@ export const Requests = () => {
     }, []);
     const handleAcceptRequest = (id: number | undefined) => {
         handleAccept(id as number)
-            .then(response => {
+            .then(() => {
                 setRequests([...requests.filter(request => request.id != id)])
             })
     }
     const handleDeclineRequest = (id: number | undefined) => {
         handleDecline(id as number)
-            .then(response => {
+            .then(() => {
                 setRequests([...requests.filter(request => request.id != id)])
             })
     }

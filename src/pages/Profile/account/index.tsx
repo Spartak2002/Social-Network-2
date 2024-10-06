@@ -3,7 +3,7 @@ import { MDBCol, MDBContainer, MDBRow, MDBCard, MDBCardText, MDBCardBody, MDBCar
 import { useNavigate, useParams } from 'react-router-dom'
 import { Gallery } from '../../../components/Gallery'
 import { IAccount } from '../../../helpers/types'
-import { handleCancelRequest, handleGetAccount, handleSendFollow, handleUnfollow } from '../../../helpers/api'
+import { handleBlock, handleCancelRequest, handleGetAccount, handleSendFollow, handleUnfollow } from '../../../helpers/api'
 import { BASE, DEF } from '../../../helpers/default'
 export function Account() {
     const { id } = useParams();
@@ -76,6 +76,37 @@ export function Account() {
                 })
         }
     }
+    const changePostStatus = (id: number) => {
+        if (found) {
+            const tmp = { ...found }
+            const post = tmp.posts?.find(post => post.id == id)
+            if (post) {
+                post.isLiked = !post.isLiked
+                setFound(tmp)
+            }
+        }
+    }
+
+    const handleBlockUser = () => {
+        if (found && found.id) {
+            handleBlock(found.id)
+                .then(response => {
+                    if (response.message == "blocked") {
+                        setFound({
+                            ...found,
+                            picture: "",
+                            posts: [],
+                            connection: { ...found.connection, didIBlock: true }
+
+                        })
+                    } else if (response.message == "unblocked") {
+                        setFound(response.payload as IAccount)
+                    }
+                })
+        }
+    }
+
+
     useEffect(() => {
         if (id) {
             handleGetAccount(id)
@@ -88,6 +119,7 @@ export function Account() {
                 })
         }
     }, [id, navigate])
+
     return (
         found && <div className="vh-100" style={{ backgroundColor: '#eee' }}>
             <MDBContainer className="container py-5 h-100">
@@ -102,7 +134,8 @@ export function Account() {
                                 <MDBTypography tag="h4">{found.name} {found.surname}</MDBTypography>
                                 <MDBCardText className="text-muted mb-4">
                                 </MDBCardText>
-                                {found.posts && <Gallery posts={found.posts} />}
+
+                                {found.posts && <Gallery posts={found.posts} onUpdatePost={changePostStatus} />}
                                 <button
                                     onClick={handleRequest}
                                     className="btn btn-primary"
@@ -117,6 +150,18 @@ export function Account() {
                                                     : "Follow"
                                     }
                                 </button>
+
+                                <button
+                                    onClick={handleBlockUser}
+                                    className="btn btn-danger">
+                                    {
+                                        found.connection.didIBlock ? "Unblock"
+                                            : "Block"
+                                    }
+
+                                </button>
+                                {found.connection.didIBlock && (<h3>You blocked this user</h3>)}
+
                                 <div className="d-flex justify-content-between text-center mt-5 mb-2">
                                     <div>
                                         <MDBCardText className="mb-1 h5">8471</MDBCardText>
@@ -136,6 +181,6 @@ export function Account() {
                     </MDBCol>
                 </MDBRow>
             </MDBContainer>
-        </div>
+        </div >
     )
 }

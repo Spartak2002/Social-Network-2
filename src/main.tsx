@@ -47,7 +47,7 @@ const routes = createBrowserRouter([
       },
       {
         path: 'requests',
-        element: <Requests user={null} />
+        element: <Requests />
       }
     ]
   }
